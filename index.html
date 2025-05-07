@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Formulario de Investigador - UNTREF</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #ffffff;
+      border-bottom: 2px solid #000000;
+      position: relative;
+      z-index: 1001;
+transition: margin-left 0.3s ease;
+    }
+header.shifted {
+  margin-left: 160px;
+}
+    header img {
+      height: 60px;
+      margin-right: 20px;
+    }
+    header h1 {
+      font-size: 24px;
+      color: #000000;
+      margin: 0;
+    }
+    header h2 {
+      margin: 0 0 0 0;
+      font-weight: normal;
+      font-size: 18px;
+      color: #333;
+      margin-left: 10px;
+    }
+#hamburger {
+  position: fixed;
+  left: 0px;
+  top: 80px;
+  background: #00529B;
+  color: white;
+  border: none;
+  padding: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  display: none;
+  z-index: 1000;
+  border-radius: 4px;
+
+  /* <-- Agregado: */
+  transition: left 0.3s ease;
+}
+#hamburger.shifted {
+  left: 160px; /* 160px (ancho sidebar) + 10px de margen original */
+}
+    #sidebar {
+      position: fixed;
+      top: 0px;
+      left: 0;
+      bottom: 0;
+      width: 160px;
+      background-color: rgba(0, 82, 155, 0.9);
+      color: white;
+      padding-top: 60px;
+      transform: translateX(-160px);
+      transition: transform 0.3s ease;
+      z-index: 999;
+    }
+    #sidebar.visible {
+      transform: translateX(0);
+    }
+    #sidebar button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: none;
+      color: white;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+    }
+    .contenido-principal {
+      flex: 1;
+      margin-left: 0;
+      padding: 20px;
+      transition: margin-left 0.3s ease;
+      max-width: 1700px;
+      width: 100%;
+      box-sizing: border-box;
+      align-self: center;
+    }
+    .contenido-principal.shifted {
+      margin-left: 160px;
+    }
+    .acceso {
+      width: 100%;
+      max-width: 500px;
+      margin: 60px auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+    }
+    .acceso label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    .acceso input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .tab-button {
+      padding: 10px 15px;
+      background-color: #ddd;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .tab-button.active {
+      background-color: #00529B;
+      color: white;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content label {
+    margin-top: 30px;    /* espacio antes de la etiqueta, si quieres más separación */
+    margin-bottom: 8px;  /* pequeño espacio tras la etiqueta */
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .tab-content textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    .tab-content small {
+      display: block;
+      text-align: left;
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 20px;
+      margin-top: 5px;
+    }
+    .botonera-lateral {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      justify-content: flex-end;
+    }
+.rrhh-container {
+      margin-top: 30px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 6px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+    .rrhh-container label,
+    .rrhh-container select,
+    .rrhh-container input {
+      display: block;
+      width: 100%;
+      max-width: 250px;
+      margin: 8px 0;
+    }
+    #tablaRrhh {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    #tablaRrhh th,
+    #tablaRrhh td {
+      padding: 8px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    #tablaRrhh th {
+      background-color: #00529B;
+      color: white;
+    }
+    #ventana-procesando {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 2000;
+    }
+    #ventana-procesando div {
+      background-color: white;
+      padding: 30px;
+      margin: 20% auto;
+      width: 300px;
+      text-align: center;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+/* Formulario Producción Científica */
+.produccion-container .form-group {
+  display: flex;
+  align-items: center;   /* etiquetas y controles a la misma altura */
+  margin-bottom: 10px;   /* menos separación vertical */
+}
+.produccion-container .form-group label {
+  flex: 0 0 140px;       /* ancho fijo para etiquetas */
+  margin: 0;
+  font-weight: bold;
+}
+.produccion-container .form-group input,
+.produccion-container .form-group select,
+.produccion-container .form-group textarea {
+  flex: 1;               /* ocupan el espacio restante */
+  max-width: 400px;      /* no muy anchos */
+  margin-left: 10px;     /* pequeño margen a la izquierda */
+  box-sizing: border-box;
+}
+.produccion-container .form-group textarea {
+  max-width: 600px;      /* más espacio para escribir */
+}
+
+/* Botonera dentro de Producción Científica */
+.produccion-container .botonera-lateral {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 10px;
+  width: 100%;
+}
+
+/* Tabla de Producción Científica (igual a RRHH) */
+#tablaProduccion {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+#tablaProduccion th,
+#tablaProduccion td {
+  padding: 8px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+#tablaProduccion th {
+  background-color: #00529B;
+  color: white;
+}
+
+footer {
+      background-color: #002855;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+    }
+    .footer-redes {
+      margin-top: 10px;
+    }
+    .footer-redes a {
+      margin: 0 10px;
+      display: inline-block;
+    }
+    .footer-redes img {
+      height: 24px;
+      width: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div id="ventana-procesando"><div>Procesando...</div></div>
+  <header>
+    <img src="https://i.postimg.cc/4dx5PqYF/Captura-de-pantalla-2025-05-03-091928.png" alt="Logo UNTREF" />
+    <div>
+      <h1>Sistema integral para ejecución de proyectos I+D (SIEP-UNTREF)</h1>
+      <h2>Secretaría de Investigación y Desarrollo</h2>
+    </div>
+  </header>
+  <button id="hamburger" onclick="toggleSidebar()">☰</button>
+  <div id="sidebar">
+    <button onclick="mostrarSeccion('instructivo')">Instructivo</button>
+    <button onclick="mostrarSeccion('informe')">Informe Académico</button>
+    <button onclick="mostrarSeccion('rendiciones')">Rendiciones</button>
+  </div>
+
+  <div id="acceso" class="acceso">
+    <h2>Acceso restringido</h2>
+    <label for="codigo">Código Sigeva Untref del proyecto:</label>
+    <input type="text" id="codigo" />
+    <label for="dni">DNI del Director/a del proyecto:</label>
+    <input type="text" id="dni" />
+    <button onclick="verificarAcceso()">Ingresar</button>
+    <p id="error-acceso" style="color: red;"></p>
+  </div>
+
+  <div id="contenido" class="contenido-principal" style="display:none">
+    <div id="instructivo" class="seccion">
+      <h2>Instructivo de carga</h2>
+      <p>Complete las pestañas del Informe Académico con la información correspondiente. Puede guardar los avances y enviar el informe cuando lo haya completado. Tenga en cuenta que una vez enviado, no podrá editar el contenido.</p>
+    </div>
+    <div id="informe" class="seccion" style="display: none;">
+      <div class="tabs">
+        <button class="tab-button active" onclick="cambiarPestana('cualitativas')">Preguntas Cualitativas</button>
+        <button class="tab-button" onclick="cambiarPestana('rrhh')">Formación de RRHH</button>
+        <button class="tab-button" onclick="cambiarPestana('produccion')">Producción Científica</button>
+      </div>
+      <div id="cualitativas" class="tab-content active">
+        <label>1. DESCRIPCIÓN FINAL DEL PROYECTO</label>
+        <small>Realice una exposición sintética de la labor desarrollada durante la ejecución del proyecto. (Máx: 2500)</small>
+        <textarea id="pregunta1" maxlength="2500" oninput="contar(this)"></textarea>
+        <small id="cont1"></small>
+
+        <label>2. OBSTÁCULOS Y DIFICULTADES</label>
+        <small>Comente los obstáculos y dificultades encontrados. (Máx: 4000)</small>
+        <textarea id="pregunta2" maxlength="4000" oninput="contar(this)"></textarea>
+        <small id="cont2"></small>
+
+        <label>3. PRODUCTOS/RESULTADOS</label>
+        <small>Describa los productos/resultados al cierre del proyecto. (Máx: 4000)</small>
+        <textarea id="pregunta3" maxlength="4000" oninput="contar(this)"></textarea>
+        <small id="cont3"></small>
+
+        <label>4. FONDOS EJECUTADOS</label>
+        <small>Justifique los gastos realizados según fondos otorgados. (Máx: 4000)</small>
+        <textarea id="pregunta4" maxlength="4000" oninput="contar(this)"></textarea>
+        <small id="cont4"></small>
+
+        <label>5. OTROS COMENTARIOS</label>
+        <small>Espacio libre para comentarios. (Máx: 3000)</small>
+        <textarea id="pregunta5" maxlength="3000" oninput="contar(this)"></textarea>
+        <small id="cont5"></small>
+	
+
+<!-- Aquí insertas el nuevo campo de archivo PDF -->
+<label for="archivo_pdf" style="margin-top: 15px; font-weight: bold;">
+  Adjuntar archivo PDF del informe (opcional)
+</label>
+<input type="file" id="archivo_pdf" accept="application/pdf" style="display: block; margin-top: 5px;" />
+
+
+        <div id="archivo-link-container" style="margin-top:10px; display:none;">
+        <a id="archivo-link" href="#" target="_blank">Ver archivo cargado</a>
+        </div>
+</div>
+<div id="rrhh" class="tab-content">
+  <h3>Formación de RRHH</h3>
+  <label>Nombre:</label>
+  <input id="rrhhNombre" type="text" />
+  <label>Apellido:</label>
+  <input id="rrhhApellido" type="text" />
+  <label>CUIT:</label>
+  <input id="rrhhCuit" type="text" />
+  <label>Tipo de formación:</label>
+  <select id="rrhhTipo">
+    <option>Proyecto final de carrera</option>
+    <option>PPS</option>
+    <option>TFI</option>
+    <option>Tesis de grado</option>
+    <option>Tesis de posgrado</option>
+  </select>
+  <button onclick="agregarRrhh()">Agregar RRHH</button>
+
+  <table id="tablaRrhh">
+    <thead>
+      <tr>
+        <th>Nombre</th><th>Apellido</th><th>CUIT</th><th>Tipo</th><th>Quitar</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<div id="produccion" class="tab-content">
+  <div class="produccion-container">
+    <div class="form-group">
+      <label for="prodTipo">Tipo:</label>
+      <select id="prodTipo">
+        <option value="Congreso">Congreso</option>
+        <option value="Revista">Revista</option>
+        <option value="Libro">Libro</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="prodFormato">Formato:</label>
+      <select id="prodFormato">
+        <option value="Articulo">Artículo</option>
+        <option value="Informe tecnico">Informe técnico</option>
+        <option value="Libro Completo">Libro completo</option>
+        <option value="Capitulo de Libro">Capítulo de libro</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="prodTitulo">Título:</label>
+      <input type="text" id="prodTitulo" />
+    </div>
+
+    <div class="form-group">
+      <label for="prodAutores">Autores:</label>
+      <textarea
+        id="prodAutores"
+        placeholder="Ej: Pérez, Juan; García, María; López, Ana; …"
+        maxlength="1000"
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="prodIsn">ISBN/ISSN/NA:</label>
+      <input type="text" id="prodIsn" />
+    </div>
+
+    <div class="form-group">
+      <label for="prodAnio">Año:</label>
+      <input type="number" id="prodAnio" min="1900" max="2100" />
+    </div>
+
+    <div class="form-group">
+      <label for="prodEstado">Estado:</label>
+      <select id="prodEstado">
+        <option value="Publicado">Publicado</option>
+        <option value="Aceptado">Aceptado</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="prodEditorial">Editorial:</label>
+      <input type="text" id="prodEditorial" />
+    </div>
+
+    <div class="form-group">
+      <label for="prodIntNac">Int/Nac:</label>
+      <select id="prodIntNac">
+        <option value="Internacional">Internacional</option>
+        <option value="Nacional">Nacional</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="prodNombrePublicacion">Nombre de revista/congreso/libro:</label>
+      <input type="text" id="prodNombrePublicacion" />
+    </div>
+
+    <div class="botonera-lateral">
+      <button onclick="agregarProduccion()">Añadir ítem</button>
+    </div>
+  </div>
+  <!-- La tabla queda fuera del container para mantener el mismo estilo que RRHH -->
+  <table id="tablaProduccion">
+    <thead>
+      <tr>
+        <th>Tipo</th>
+        <th>Formato</th>
+        <th>Título</th>
+        <th>Autores</th>
+        <th>ISBN/ISSN</th>
+        <th>Año</th>
+        <th>Estado</th>
+        <th>Editorial</th>
+        <th>Int/Nac</th>
+        <th>Publicación</th>
+        <th>—</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+      <div class="botonera-lateral">
+        <button onclick="guardarDatos()">Guardar</button>
+        <button onclick="enviarInforme()">Enviar informe</button>
+        <button onclick="salir()">Salir</button>
+      </div>
+</div>
+    <div id="rendiciones" class="seccion" style="display: none;">
+      <h2>Sección de Rendiciones</h2>
+      <p>(Próximamente)</p>
+    </div>
+  </div>
+
+  <footer>
+    Secretaría de Investigación y Desarrollo - UNTREF<br>
+    Valentín Gómez 4752, Caseros, Buenos Aires, Argentina<br>
+    Tel: (011) 4759-0040 | Lunes a Viernes de 9 a 17 h
+    <div class="footer-redes">
+      <a href="https://www.facebook.com/UNTREF" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" /></a>
+      <a href="https://www.instagram.com/untref/" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" /></a>
+      <a href="https://www.youtube.com/user/UNTREFTV" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="YouTube" /></a>
+    </div>
+  </footer>
+
+  <script>
+
+  const scriptURL = "https://script.google.com/macros/s/AKfycbwxHczXLV5o9j4gpFI2qiOolbkdYmmKoMY9CDc7Xor_uBVWLnITsnAN6LT6fE9vsNk4wQ/exec";
+    const investigadoresAutorizados = { "TF1234": "34217906", "TF5678": "40123987" };
+
+
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("visible");
+      document.querySelector(".contenido-principal").classList.toggle("shifted");
+document.getElementById("hamburger").classList.toggle("shifted");
+document.querySelector("header").classList.toggle("shifted");
+    }
+    function mostrarSeccion(sec) {
+      document.querySelectorAll('.seccion').forEach(s => s.style.display = 'none');
+      document.getElementById(sec).style.display = 'block';
+    }
+    function cambiarPestana(tab) {
+      document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(d => d.classList.remove('active'));
+      document.querySelector(`[onclick*="${tab}"]`).classList.add('active');
+      document.getElementById(tab).classList.add('active');
+    }
+    function mostrarProcesando(m) {
+      document.getElementById("ventana-procesando").style.display = m ? 'block' : 'none';
+    }
+let rrhhList = [];
+let produccionList = [];
+
+function verificarAcceso() {
+  const codigo = document.getElementById("codigo").value.trim().toUpperCase();
+  const dni    = document.getElementById("dni").value.trim();
+
+  // 1) Validación local
+  if (!investigadoresAutorizados[codigo] || investigadoresAutorizados[codigo] !== dni) {
+    document.getElementById("error-acceso").innerText = "Código o DNI incorrecto.";
+    return;
+  }
+
+  // 2) Muestro overlay “Procesando…”
+  mostrarProcesando(true);
+
+  // 3) Llamada a doGet en tu Apps Script
+  fetch(`${scriptURL}?codigo=${codigo}&dni=${dni}`)
+    .then(res => res.text())
+    .then(txt => {
+      // 4) Oculto overlay
+      mostrarProcesando(false);
+
+      // 5) Casos de texto plano
+      if (txt.trim() === "EXISTE") {
+        document.getElementById("error-acceso").innerText = "Este informe ya fue enviado.";
+        return;
+      }
+      if (txt.trim() === "NO_EXISTE") {
+        document.getElementById("error-acceso").innerText = "No se encontró ningún registro con ese Código/DNI.";
+        return;
+      }
+
+      // 6) Intento parsear JSON
+      let data;
+      try {
+        data = JSON.parse(txt);
+      } catch (err) {
+        console.error("Error al parsear JSON:", err);
+        document.getElementById("error-acceso").innerText = "Respuesta inesperada del servidor.";
+        return;
+      }
+
+      // 7) Muestro la UI principal
+      document.getElementById("acceso").style.display    = "none";
+      document.getElementById("hamburger").style.display = "block";
+      document.getElementById("sidebar").style.display   = "block";
+      document.getElementById("contenido").style.display = "block";
+      mostrarSeccion("instructivo");
+
+      // 8) Precargo campos básicos
+      ["nombre","apellido","pregunta1","pregunta2","pregunta3","pregunta4","pregunta5"]
+        .forEach(field => {
+          const el = document.getElementById(field);
+          if (data[field] !== undefined && el) el.value = data[field];
+        });
+
+      // 9) Precargo RRHH
+      if (Array.isArray(data.rrhh)) {
+        rrhhList = data.rrhh;
+        actualizarTablaRrhh();
+      }
+
+      // 10) Precargo Producción Científica
+      if (Array.isArray(data.produccion)) {
+        produccionList = data.produccion;
+        actualizarTablaProduccion();
+      }
+
+      // 11) **Nuevo**: mostrar/ocultar enlace al PDF
+      const linkContainer = document.getElementById("archivo-link-container");
+      const link          = document.getElementById("archivo-link");
+      if (data.archivo) {
+        link.href        = data.archivo;
+        link.textContent = "Ver archivo cargado";
+        linkContainer.style.display = "block";
+      } else {
+        linkContainer.style.display = "none";
+      }
+
+      // 12) Actualizo contadores de caracteres
+      document.querySelectorAll("textarea").forEach(t => contar(t));
+    })
+    .catch(err => {
+      mostrarProcesando(false);
+      console.error("Fetch doGet error:", err);
+      alert("Error al verificar acceso. Por favor inténtalo de nuevo.");
+    });
+}
+
+function guardarDatos() {
+  mostrarProcesando(true);
+  const fileInput = document.getElementById('archivo_pdf');
+
+  // Esta función monta todos los parámetros y dispara el fetch
+  const send = (dataURL) => {
+    const params = new URLSearchParams();
+    // 1) Campos estándar
+    ['codigo','dni','pregunta1','pregunta2','pregunta3','pregunta4','pregunta5']
+      .forEach(f => params.append(f, document.getElementById(f).value));
+    // 2) RRHH y Producción Científica
+    params.append('rrhh', JSON.stringify(rrhhList));
+    params.append('produccion', JSON.stringify(produccionList));
+    // 3) Estado BORRADOR
+    params.append('estado', 'BORRADOR');
+    // 4) PDF en base64 (si existe)
+    if (dataURL) {
+      params.append('archivo_pdf', dataURL);
+    }
+
+    // 5) Envío al Apps Script
+    fetch(scriptURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params
+    })
+    .then(r => r.text())
+    .then(() => {
+      mostrarProcesando(false);
+      alert('Datos guardados correctamente.');
+    })
+    .catch(err => {
+      mostrarProcesando(false);
+      console.error(err);
+      alert('Error al guardar datos.');
+    });
+  };
+
+  // Si se seleccionó un archivo, lo leemos como dataURL (base64) antes de enviar
+  if (fileInput && fileInput.files.length > 0) {
+    const reader = new FileReader();
+    reader.onload = () => send(reader.result);
+    reader.readAsDataURL(fileInput.files[0]);
+  } else {
+    // Si no hay PDF, enviamos sin ese campo
+    send();
+  }
+}
+
+
+  function enviarInforme() {
+    // 0) Validación de campos obligatorios
+    const obligatorios = [
+      { id: 'pregunta1', label: 'Descripción final del proyecto' },
+      { id: 'pregunta3', label: 'Productos/Resultados' },
+      { id: 'pregunta4', label: 'Fondos ejecutados' }
+    ];
+    for (const {id, label} of obligatorios) {
+      const valor = document.getElementById(id).value.trim();
+      if (!valor) {
+        alert(`Por favor, complete el campo obligatorio: "${label}".`);
+        return;
+      }
+    }
+
+    // 1) Confirmación de envío
+    if (!confirm('¿Está seguro que desea enviar el informe? No podrá modificarlo luego.')) return;
+    mostrarProcesando(true);
+
+    const fileInput = document.getElementById('archivo_pdf');
+
+    // 2) Función interna que construye los params y dispara el fetch
+    const send = (dataURL) => {
+      const params = new URLSearchParams();
+      // Campos estándar
+      ['codigo','dni','pregunta1','pregunta2','pregunta3','pregunta4','pregunta5']
+        .forEach(f => params.append(f, document.getElementById(f).value));
+      // RRHH y Producción Científica
+      params.append('rrhh', JSON.stringify(rrhhList));
+      params.append('produccion', JSON.stringify(produccionList));
+      // Estado ENVIADO
+      params.append('estado', 'ENVIADO');
+      // PDF en base64 (si existe)
+      if (dataURL) {
+        params.append('archivo_pdf', dataURL);
+      }
+
+      // Envío al Apps Script
+      fetch(scriptURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params
+      })
+      .then(r => r.text())
+      .then(() => {
+        mostrarProcesando(false);
+        alert('Informe enviado correctamente.');
+        location.reload();
+      })
+      .catch(err => {
+        mostrarProcesando(false);
+        console.error(err);
+        alert('Error al enviar informe.');
+      });
+    };
+
+    // 3) Si hay un PDF seleccionado, leer como DataURL antes de enviar
+    if (fileInput && fileInput.files.length > 0) {
+      const reader = new FileReader();
+      reader.onload = () => send(reader.result);
+      reader.readAsDataURL(fileInput.files[0]);
+    } else {
+      // 4) Si no hay PDF, enviamos sin ese campo
+      send();
+    }
+  }
+
+
+    function salir() { if(confirm('¿Desea salir?')) location.reload(); }
+    function contar(t) {
+      const id = 'cont' + t.id.replace('pregunta','');
+      document.getElementById(id).innerText = `${t.value.length}/${t.maxLength} caracteres`;
+    }
+function actualizarTablaRrhh() {
+  const tbody = document.querySelector("#tablaRrhh tbody");
+  tbody.innerHTML = "";
+  rrhhList.forEach((item, idx) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${item.nombre}</td>
+      <td>${item.apellido}</td>
+      <td>${item.cuit}</td>
+      <td>${item.tipo}</td>
+      <td><button onclick="quitarRrhh(${idx})">❌</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+function quitarRrhh(idx) {
+  rrhhList.splice(idx, 1);
+  actualizarTablaRrhh();
+}
+function agregarRrhh() {
+  const nombre   = document.getElementById("rrhhNombre").value.trim();
+  const apellido = document.getElementById("rrhhApellido").value.trim();
+  const cuit     = document.getElementById("rrhhCuit").value.trim();
+  const tipo     = document.getElementById("rrhhTipo").value;
+  if (!nombre || !apellido || !cuit) {
+    return alert("Complete todos los campos de RRHH.");
+  }
+  rrhhList.push({ nombre, apellido, cuit, tipo });
+  actualizarTablaRrhh();
+  ["rrhhNombre","rrhhApellido","rrhhCuit"].forEach(id => document.getElementById(id).value = "");
+}
+function agregarProduccion() {
+  const tipo     = document.getElementById("prodTipo").value;
+  const formato  = document.getElementById("prodFormato").value;
+  const titulo   = document.getElementById("prodTitulo").value.trim();
+  const autores  = document.getElementById("prodAutores").value.trim();
+  const isn      = document.getElementById("prodIsn").value.trim();
+  const anio     = document.getElementById("prodAnio").value.trim();
+  const estado   = document.getElementById("prodEstado").value;
+  const editorial= document.getElementById("prodEditorial").value.trim();
+  const intNac   = document.getElementById("prodIntNac").value;
+  const nombrePub= document.getElementById("prodNombrePublicacion").value.trim();
+
+  if (!titulo) return alert("Debe completar al menos el título.");
+
+  produccionList.push({
+    tipo, formato, titulo, autores,
+    isn, anio, estado, editorial,
+    intNac, nombrePub
+  });
+  actualizarTablaProduccion();
+
+  // Limpiar inputs
+  ["prodTitulo","prodAutores","prodIsn","prodAnio","prodEditorial","prodNombrePublicacion"]
+    .forEach(id=>document.getElementById(id).value="");
+}
+
+// 3. Función para renderizar la tabla
+function actualizarTablaProduccion() {
+  const tbody = document.querySelector("#tablaProduccion tbody");
+  tbody.innerHTML = "";
+  produccionList.forEach((item, idx) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${item.tipo}</td>
+      <td>${item.formato}</td>
+      <td>${item.titulo}</td>
+      <td>${item.autores}</td>
+      <td>${item.isn}</td>
+      <td>${item.anio}</td>
+      <td>${item.estado}</td>
+      <td>${item.editorial}</td>
+      <td>${item.intNac}</td>
+      <td>${item.nombrePub}</td>
+      <td><button onclick="quitarProduccion(${idx})">❌</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// 4. Función para eliminar un ítem
+function quitarProduccion(idx) {
+  produccionList.splice(idx, 1);
+  actualizarTablaProduccion();
+}
+  function contar(textarea) {
+    const id = textarea.id.replace("pregunta","cont");
+    const contador = document.getElementById(id);
+    if (!contador) return;
+    const actual = textarea.value.length;
+    const max    = textarea.maxLength;
+    contador.innerText = `${actual}/${max} caracteres`;
+  }
+  </script>
+</body>
+</html>
