@@ -117,14 +117,19 @@ header.shifted {
       margin-top: 15px;
       font-weight: bold;
     }
-    .acceso input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 16px;
-    }
+.acceso input[type="text"] {
+  /* Que ocupe todo el ancho disponible menos 20px (10px de espacio a cada lado) */
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin-top: 5px;
+  
+  /* IMPORTANTE: incluir box-sizing para que el padding se reste del ancho total */
+  box-sizing: border-box;
+  
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
     .tabs {
       display: flex;
       gap: 10px;
@@ -401,6 +406,7 @@ footer {
     <div class="form-group">
       <label for="prodTipo">Tipo:</label>
       <select id="prodTipo">
+        <option value="" disabled selected hidden>Seleccione tipo…</option>
         <option value="Congreso">Congreso</option>
         <option value="Revista">Revista</option>
         <option value="Libro">Libro</option>
@@ -410,6 +416,7 @@ footer {
     <div class="form-group">
       <label for="prodFormato">Formato:</label>
       <select id="prodFormato">
+        <option value="" disabled selected hidden>Seleccione tipo…</option>
         <option value="Articulo">Artículo</option>
         <option value="Informe tecnico">Informe técnico</option>
         <option value="Libro Completo">Libro completo</option>
@@ -427,7 +434,7 @@ footer {
       <textarea
         id="prodAutores"
         placeholder="Ej: Pérez, Juan; García, María; López, Ana; …"
-        maxlength="1000"
+        rows="3"
       ></textarea>
     </div>
 
@@ -444,6 +451,7 @@ footer {
     <div class="form-group">
       <label for="prodEstado">Estado:</label>
       <select id="prodEstado">
+        <option value="" disabled selected hidden>Seleccione tipo…</option>
         <option value="Publicado">Publicado</option>
         <option value="Aceptado">Aceptado</option>
       </select>
@@ -457,6 +465,7 @@ footer {
     <div class="form-group">
       <label for="prodIntNac">Int/Nac:</label>
       <select id="prodIntNac">
+        <option value="" disabled selected hidden>Seleccione tipo…</option>
         <option value="Internacional">Internacional</option>
         <option value="Nacional">Nacional</option>
       </select>
@@ -505,8 +514,8 @@ footer {
 
   <footer>
     Secretaría de Investigación y Desarrollo - UNTREF<br>
-    Valentín Gómez 4752, Caseros, Buenos Aires, Argentina<br>
-    Tel: (011) 4759-0040 | Lunes a Viernes de 9 a 17 h
+    Los Aromos 6231, Palomar, Buenos Aires, Argentina<br>
+    Tel: (011) 4751–3987/4751–3979 | Lunes a Viernes de 9 a 17 h
     <div class="footer-redes">
       <a href="https://www.facebook.com/UNTREF" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" /></a>
       <a href="https://www.instagram.com/untref/" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" /></a>
@@ -517,7 +526,20 @@ footer {
   <script>
 
   const scriptURL = "https://script.google.com/macros/s/AKfycbwxHczXLV5o9j4gpFI2qiOolbkdYmmKoMY9CDc7Xor_uBVWLnITsnAN6LT6fE9vsNk4wQ/exec";
-    const investigadoresAutorizados = { "TF1234": "34217906", "TF5678": "40123987" };
+    const investigadoresAutorizados = {
+  "TF1234": "34217906",
+  "TF5678": "40123987",
+  "001TF":  "1001",
+  "002TF":  "1002",
+  "003TF":  "1003",
+  "004TF":  "1004",
+  "005TF":  "1005",
+  "006TF":  "1006",
+  "007TF":  "1007",
+  "008TF":  "1008",
+  "009TF":  "1009",
+  "010TF":  "1010"
+};
 
 
     function toggleSidebar() {
@@ -620,7 +642,7 @@ function verificarAcceso() {
       }
 
       // 12) Actualizo contadores de caracteres
-      document.querySelectorAll("textarea").forEach(t => contar(t));
+      document.querySelectorAll("textarea[id^='pregunta']").forEach(t => contar(t));
     })
     .catch(err => {
       mostrarProcesando(false);
